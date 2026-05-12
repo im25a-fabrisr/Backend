@@ -1,14 +1,34 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+
+# ── Kategorie ──────────────────────────────────────────────────────────────────
+class KategorieBase(BaseModel):
+    Kategorie: str
+    IstAktiv: bool = True
+
+class KategorieCreate(KategorieBase):
+    pass
+
+class KategorieUpdate(KategorieBase):
+    pass
+
+class KategorieOut(KategorieBase):
+    KategorieID: int
+
+    class Config:
+        from_attributes = True
+
+
+# ── Aufgabe (bereits vorhanden, angepasst) ─────────────────────────────────────
 class AufgabeCreate(BaseModel):
-    titel: str
-    beginn: datetime | None = None
-    ende: datetime | None = None
-    ort: str | None = None
-    koordinaten: str | None = None
-    notiz: str | None = None
-    kategorie_id: int | None = None
-    prioritaet_id: int | None = None
-    fortschritt_id: int | None = None
-    benutzer_id: int
+    Titel: str
+    Beginn: datetime
+    Ende: datetime | None = None
+    Ort: str | None = None
+    Koordinaten: str | None = None
+    Notiz: str | None = None
+    KategorieID: int
+    PrioritaetID: int
+    FortschrittID: int
+    BenutzerID: int
