@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 import models, schemas
 from database import engine, get_db
 
@@ -375,3 +376,21 @@ def delete_aufgabe_material(aufgabe_id: int, material_id: int, db: Session = Dep
         raise HTTPException(status_code=404, detail="AufgabeMaterial nicht gefunden")
     db.delete(eintrag)
     db.commit()
+
+
+# ── View: Aufgaben Übersicht ────────────────────────────────────────────────────
+
+@app.get("/view/aufgaben")
+def get_view_aufgaben(db: Session = Depends(get_db)):
+    ergebnis = db.execute(text("SELECT * FROM v_aufgaben_uebersicht"))
+    zeilen = ergebnis.mappings().all()
+    return [dict(zeile) for zeile in zeilen]
+
+
+# ── Stored Procedure: Aufgaben nach Kategorie ──────────────────────────────────
+
+@app.get("/procedure/aufgaben/{kat_id}")
+def get_aufgaben_nach_kategorie(kat_id: int, db: Session = Depends(get_db)):
+    ergebnis = db.execute(text("CALL sp_aufgaben_nach_kategorie(:kat_id)"), {"kat_id": kat_id})
+    zeilen = ergebnis.mappings().all()
+    return [dict(zeile) for zeile in zeilen]
